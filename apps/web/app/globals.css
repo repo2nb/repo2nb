@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* light */
+  --bg: #fafafa;
+  --panel: #ffffff;
+  --border-c: #e4e4e7;
+  --fg: #18181b;
+  --muted: #71717a;
+  --faint: #a1a1aa;
+  --hover: #f4f4f5;
+}
+
+.dark {
+  --bg: #09090b;
+  --panel: #151517;
+  --border-c: #242426;
+  --fg: #ededf0;
+  --muted: #9d9da3;
+  --faint: #626268;
+  --hover: #1c1c1f;
+}
+
+:root {
+  --accent: #ef5033;
+  --accent-2: #f47727;
+  --grad: linear-gradient(90deg, #ef5033, #f47727);
+  --ok: #2fa96c;
+  --warn: #d97706;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jbmono), ui-monospace, monospace;
+  --font-display: var(--font-jost), var(--font-inter), sans-serif;
+
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-line: var(--border-c);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-hover: var(--hover);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+}
+
+html {
+  color-scheme: light;
+}
+.dark html,
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(239, 80, 51, 0.25);
+}
+
+.accent-text {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.accent-bg {
+  background: var(--grad);
+}
+
+/* calm entrance: one staggered reveal on load, nothing after */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+  }
+}
+
+/* faint dot grid for the hero backdrop */
+.dotgrid {
+  background-image: radial-gradient(var(--border-c) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 30%, transparent 75%);
+}

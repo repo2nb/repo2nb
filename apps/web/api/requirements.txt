@@ -1,0 +1,8 @@
+fastapi>=0.115
+python-multipart>=0.0.9
+
+# local dev server only (not needed on Vercel)
+uvicorn>=0.30
+
+# the shared engine, editable so local core changes propagate
+-e ../../packages/repo2nb_core
