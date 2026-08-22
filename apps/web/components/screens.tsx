@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import { useMemo, useState } from "react";
 import { formatBytes } from "@/lib/files";
 import { buildTree, sortedChildren, type TreeNode } from "@/lib/tree";
@@ -248,6 +249,7 @@ export function ResultScreen({
         <a
           href={url}
           download={filename}
+          onClick={() => track("notebook_downloaded")}
           className="accent-bg mt-5 inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-medium text-white shadow-[0_8px_20px_-8px_rgba(239,80,51,0.7)]"
         >
           <IconDownload /> Download {filename}

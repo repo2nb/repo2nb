@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { track } from "@vercel/analytics";
 import { Faq, Footer, Nav } from "@/components/chrome";
 import { Card, ResultScreen, TreeScreen } from "@/components/screens";
 import { ApiError, generate, getRules } from "@/lib/api";
@@ -66,6 +67,7 @@ export default function ConvertPage() {
     setError(null);
     try {
       const blob = await generate(entries, [...checked], target);
+      track("notebook_generated");
       setResultUrl((prev) => {
         if (prev) URL.revokeObjectURL(prev);
         return URL.createObjectURL(blob);

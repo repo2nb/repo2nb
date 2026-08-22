@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { track } from "@vercel/analytics";
 import { session } from "@/lib/session";
 import { IconFolder } from "./icons";
 
@@ -14,6 +15,7 @@ export function Picker() {
   function onSelect(list: FileList | File[]) {
     session.files = Array.from(list);
     // navigate immediately; the /loading page owns the background pipeline
+    track("folder_selected");
     router.push("/loading");
   }
 

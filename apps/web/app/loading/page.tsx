@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { track } from "@vercel/analytics";
 import { getRules } from "@/lib/api";
 import { session } from "@/lib/session";
 import { Logo } from "@/components/chrome";
@@ -59,6 +60,7 @@ export default function LoadingPage() {
           }
           session.entries = m.entries;
           session.scan = m.result as ScanResponse;
+          track("tree_previewed", { file_count: m.result.files.length, target: session.target });
           setTimeout(() => !cancelled && router.push("/convert"), 400);
         };
         w.onerror = () => {
