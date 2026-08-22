@@ -148,3 +148,6 @@ __pycache__/
 *.egg-info/
 .pytest_cache/
 .ruff_cache/
+
+# vendored engine for Vercel python function (created by vercel-build.sh)
+apps/web/api/vendor/

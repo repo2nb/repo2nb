@@ -4,5 +4,8 @@ python-multipart>=0.0.9
 # local dev server only (not needed on Vercel)
 uvicorn>=0.30
 
-# the shared engine, editable so local core changes propagate
--e ../../packages/repo2nb_core
+# repo2nb_core is NOT installed here:
+#  - locally it comes from `uv pip install -r api/requirements.txt` after the editable
+#    install in README, i.e. `uv pip install -e ../../packages/repo2nb_core`
+#  - on Vercel the build command copies ../../packages/repo2nb_core/repo2nb_core into
+#    api/vendor/ (see vercel-build.sh), which index.py puts on sys.path

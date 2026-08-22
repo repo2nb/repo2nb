@@ -48,7 +48,7 @@ Requires Node 20+, pnpm 10+, Python 3.11+, and `uv`.
 ```sh
 # terminal 1 — API
 cd apps/web
-uv venv .venv && uv pip install -r api/requirements.txt
+uv venv .venv && uv pip install -r api/requirements.txt -e ../../packages/repo2nb_core
 .venv/bin/uvicorn api.index:app --reload --port 8000
 
 # terminal 2 — UI
@@ -57,8 +57,18 @@ pnpm install
 pnpm dev
 ```
 
-Open **http://localhost:3000**. In dev, `/api/*` is proxied to port 8000 by
-`next.config.ts`; in production Vercel serves the same paths from `apps/web/api`.
+## Deploy
+
+Push to GitHub → import into Vercel with **Root Directory** = `apps/web`, and set the
+**Build Command** override to:
+
+```sh
+bash vercel-build.sh
+```
+
+That copies the engine into `api/vendor/` (Vercel's uv sandbox rejects requirements
+paths outside the function dir) before running `next build`. The Python function is
+picked up automatically; no env vars needed.
 
 ## Tests / checks
 
@@ -67,7 +77,3 @@ cd packages/repo2nb_core && uv run pytest && uv run ruff check .
 cd apps/web && pnpm lint && pnpm typecheck && pnpm build
 ```
 
-## Deploy
-
-Push to GitHub → import into Vercel with **Root Directory** = `apps/web`.
-The Python function is picked up automatically; no env vars needed.
