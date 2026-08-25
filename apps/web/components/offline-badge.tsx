@@ -5,6 +5,27 @@ import { engineInstalled, installEngine } from "@/lib/offline";
 
 type State = "hidden" | "caching" | "ready" | "offline";
 
+// singleton: one background download regardless of how many times this
+// component mounts/unmounts across navigations
+const ENGINE_EVENT = "repo2nb-engine-installed";
+let installing: Promise<void> | null = null;
+
+function ensureInstalled(): Promise<void> {
+  const conn = navigator as Navigator & { connection?: { saveData?: boolean } };
+  if (!installing && !engineInstalled() && !conn.connection?.saveData) {
+    installing = installEngine()
+      .then(() => {
+        window.dispatchEvent(new Event(ENGINE_EVENT));
+      })
+      .catch((err) => {
+        // visible on purpose: a failed install otherwise looks like a stuck badge
+        console.warn("[repo2nb] offline engine install failed:", err);
+        installing = null; // allow a retry on the next visit/mount
+      });
+  }
+  return installing ?? Promise.resolve();
+}
+
 /** Nav badge tracking offline readiness. After the service worker activates the
  * engine installs itself in the background (~6 MB, once; skipped on metered
  * connections): "caching…" → "offline ready" (green), turning orange-gradient
@@ -14,28 +35,25 @@ export function OfflineBadge() {
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) return;
-    let cancelled = false;
+    let alive = true;
     const sync = () => {
       if (!navigator.onLine) return setState("offline");
       setState(engineInstalled() ? "ready" : "caching");
     };
     navigator.serviceWorker.ready.then(() => {
-      if (cancelled) return;
+      if (!alive) return;
       sync();
-      const conn = navigator as Navigator & { connection?: { saveData?: boolean } };
-      if (!engineInstalled() && !conn.connection?.saveData) {
-        installEngine()
-          .then(() => !cancelled && sync())
-          .catch(() => {
-            // engine couldn't install (old browser etc): stay quiet
-            if (!cancelled && navigator.onLine && !engineInstalled()) setState("hidden");
-          });
-      }
+      ensureInstalled().finally(() => {
+        if (alive) sync();
+        else window.dispatchEvent(new Event(ENGINE_EVENT)); // someone else's mount will sync
+      });
     });
+    window.addEventListener(ENGINE_EVENT, sync);
     window.addEventListener("online", sync);
     window.addEventListener("offline", sync);
     return () => {
-      cancelled = true;
+      alive = false;
+      window.removeEventListener(ENGINE_EVENT, sync);
       window.removeEventListener("online", sync);
       window.removeEventListener("offline", sync);
     };

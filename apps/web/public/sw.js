@@ -1,7 +1,7 @@
 // Offline-first cache: after the first visit, the app shell (all routes), the
 // Pyodide runtime (CDN) and the engine bundle are served from the cache, so the
 // tool works with the network off. API calls are never cached.
-const CACHE = "repo2nb-v2";
+const CACHE = "repo2nb-v3";
 
 // every route + favicon: precached at install so offline navigation works
 // even for pages the user never opened while online
@@ -36,6 +36,19 @@ self.addEventListener("install", (e) => {
             await c.put(new URL(p + "?_rsc", location.origin).href, res.clone());
         }),
       );
+      // precache all built JS/CSS/font assets (route chunks are dynamic imports:
+      // without this they only cache when each route is first visited online)
+      try {
+        const manifest = await (await fetch("/sw-precache.json", { cache: "no-cache" })).json();
+        await Promise.allSettled(
+          manifest.map(async (p) => {
+            const res = await fetch(p, { cache: "no-cache" });
+            if (res.ok) await c.put(new URL(p, location.origin).href, res);
+          }),
+        );
+      } catch {
+        // manifest missing (dev build): runtime caching still applies
+      }
       self.skipWaiting();
     })(),
   );
