@@ -34,7 +34,12 @@ function initEngine(): Promise<WebApi> {
   if (!ready) {
     ready = (async () => {
       scope.importScripts(`${PYODIDE_BASE}pyodide.js`);
-      const py = await scope.loadPyodide({ indexURL: PYODIDE_BASE });
+      let py: Pyodide;
+      try {
+        py = await scope.loadPyodide({ indexURL: PYODIDE_BASE });
+      } catch (err) {
+        throw new Error(`pyodide runtime failed to load: ${String(err)}`);
+      }
       const res = await fetch("/engine.json");
       if (!res.ok) throw new Error("engine bundle missing");
       const { files } = (await res.json()) as { files: Record<string, string> };
