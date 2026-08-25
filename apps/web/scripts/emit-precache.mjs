@@ -11,7 +11,10 @@ const out = [];
   for (const name of readdirSync(dir)) {
     const p = join(dir, name);
     if (statSync(p).isDirectory()) walk(p);
-    else out.push("/_next/static/" + p.slice(root.length + 1).split("\\").join("/"));
+    else {
+      const rel = "/_next/static/" + p.slice(root.length + 1).split("\\").join("/");
+      if (rel) out.push(rel); // never emit empty entries
+    }
   }
 })(root);
 

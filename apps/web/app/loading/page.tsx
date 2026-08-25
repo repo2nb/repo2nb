@@ -58,6 +58,7 @@ export default function LoadingPage() {
         if (m.kind === "progress") return setProgress(m.frac ?? 0);
         if (m.kind === "engine_failed" && !serverWorker) {
           // Pyodide unavailable (old browser / runtime not cached): use the server
+          console.warn("[repo2nb] offline engine failed, falling back to server:", m.message);
           serverWorker = new Worker(new URL("../../lib/scan.worker.ts", import.meta.url));
           serverWorker.onmessage = (ev: MessageEvent) => handle(ev.data);
           serverWorker.onerror = () => fail("something went wrong while reading that folder.");

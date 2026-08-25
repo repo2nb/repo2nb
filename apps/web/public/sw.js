@@ -1,11 +1,11 @@
 // Offline-first cache: after the first visit, the app shell (all routes), the
 // Pyodide runtime (CDN) and the engine bundle are served from the cache, so the
 // tool works with the network off. API calls are never cached.
-const CACHE = "repo2nb-v4";
+const CACHE = "repo2nb-v5";
 
-// every route + favicon: precached at install so offline navigation works
+// every route + icon: precached at install so offline navigation works
 // even for pages the user never opened while online
-const PRECACHE = ["/", "/loading", "/convert", "/filters", "/privacy", "/favicon.ico"];
+const PRECACHE = ["/", "/loading", "/convert", "/filters", "/privacy", "/icon.svg"];
 
 const cacheable = (url) =>
   url.origin === location.origin || url.hostname === "cdn.jsdelivr.net";
@@ -58,38 +58,51 @@ self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
-  const url = new URL(req.url);
+  let url;
+  try {
+    url = new URL(req.url);
+  } catch {
+    return;
+  }
   if (url.origin === location.origin && url.pathname.startsWith("/api/")) return;
   if (!cacheable(url)) return;
 
-  const key = keyFor(url, req.headers.get("rsc") === "1");
-
   e.respondWith(
     (async () => {
-      const cache = await caches.open(CACHE);
-      const key = keyFor(url, req.headers.get("rsc") === "1");
-      // engine bundle: network-first so new deploys replace stale cached copies
-      const networkFirst = url.pathname === "/engine.json";
-      const cached = await cache.match(key);
-      const network = fetch(req)
-        .then((res) => {
-          if (res && res.ok) cache.put(key, res.clone());
-          return res;
-        })
-        .catch(() => null);
+      try {
+        const cache = await caches.open(CACHE);
+        const key = keyFor(url, req.headers.get("rsc") === "1");
+        // engine bundle: network-first so new deploys replace stale cached copies
+        const networkFirst = url.pathname === "/engine.json";
+        const cached = await cache.match(key);
+        const network = fetch(req)
+          .then((res) => {
+            if (res && res.ok && res.type !== "opaque") cache.put(key, res.clone());
+            return res;
+          })
+          .catch(() => null);
 
-      if (cached && !networkFirst) {
-        e.waitUntil(network);
-        return cached;
+        if (cached && !networkFirst) {
+          e.waitUntil(network);
+          return cached;
+        }
+        const res = await network;
+        if (res) return res;
+        if (cached) return cached; // offline fallback for network-first resources
+        if (req.mode === "navigate") {
+          const home = await cache.match("/");
+          if (home) return home;
+        }
+        return new Response("offline and not cached yet", { status: 503 });
+      } catch (err) {
+        // never let the handler itself throw — serve cache or a plain 503
+        console.warn("[repo2nb sw] fetch handler error for", req.url, err);
+        const cache = await caches.open(CACHE);
+        const fallback =
+          (await cache.match(keyFor(url, false))) || (await cache.match(keyFor(url, true)));
+        if (fallback) return fallback;
+        return new Response("service worker error", { status: 503 });
       }
-      const res = await network;
-      if (res) return res;
-      if (cached) return cached; // offline fallback for network-first resources
-      if (req.mode === "navigate") {
-        const home = await cache.match("/");
-        if (home) return home;
-      }
-      return new Response("offline and not cached yet", { status: 503 });
     })(),
   );
 });
