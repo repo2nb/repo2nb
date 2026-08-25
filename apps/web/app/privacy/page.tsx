@@ -122,8 +122,8 @@ notebook_downloaded`}
             <h2 className="font-display text-xl tracking-tight">4. No third parties, ever</h2>
             <p className="mt-3 text-sm leading-relaxed text-muted">
               Open DevTools → Network on any page of this site and group by domain: you will
-              see this site&apos;s own origin, the Vercel analytics beacon, and the Pyodide
-              CDN (only while downloading the offline engine). No ads, no trackers, no
+              see only this site&apos;s own origin. The conversion engine and its Python
+              runtime are served from here too — no CDN, no ads, no trackers, no
               font CDNs, no social widgets.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-muted">

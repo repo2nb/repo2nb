@@ -2,26 +2,24 @@
 // Pyodide runtime (CDN) and the engine bundle are served from the cache, so the
 // tool works with the network off. API calls are never cached.
 // keep in sync with SW_CACHE in apps/web/lib/offline.ts
-const CACHE = "repo2nb-v6";
+const CACHE = "repo2nb-v7";
 
 // every route + icon: precached at install so offline navigation works
 // even for pages the user never opened while online
 const ROUTES = ["/", "/loading", "/convert", "/filters", "/privacy", "/icon.svg"];
 
-// the Pyodide runtime files the browser engine needs: precached explicitly so
-// offline boots never depend on whether a worker fetched them while controlled
-const PYODIDE_BASE = "https://cdn.jsdelivr.net/pyodide/v0.27.2/full/";
+// the Pyodide runtime, self-hosted from public/pyodide/ by bundle-engine.mjs:
+// precached explicitly so offline boots never depend on HTTP cache headers
 const PYODIDE_FILES = [
-  "pyodide.js",
-  "pyodide.asm.js",
-  "pyodide.asm.wasm",
-  "python_stdlib.zip",
-  "pyodide-lock.json",
+  "/pyodide/pyodide.js",
+  "/pyodide/pyodide.asm.js",
+  "/pyodide/pyodide.asm.wasm",
+  "/pyodide/python_stdlib.zip",
+  "/pyodide/pyodide-lock.json",
 ];
-const PRECACHE = [...ROUTES, ...PYODIDE_FILES.map((f) => PYODIDE_BASE + f)];
+const PRECACHE = [...ROUTES, ...PYODIDE_FILES];
 
-const cacheable = (url) =>
-  url.origin === location.origin || url.hostname === "cdn.jsdelivr.net";
+const cacheable = (url) => url.origin === location.origin;
 
 // Next.js client-side navigation fetches RSC payloads (`?_rsc=<volatile hash>`).
 // Cache those under the bare pathname + "?_rsc" so the hash never breaks the

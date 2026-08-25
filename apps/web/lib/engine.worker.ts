@@ -7,8 +7,9 @@ import type { Entry, Limits, Rule, ScanResponse } from "./types";
 // runtime not cached yet), scan posts {kind:"engine_failed"} so the caller can
 // fall back to the server worker; generate failures surface as {kind:"engine_error"}.
 
-const PYODIDE_VERSION = "0.27.2";
-const PYODIDE_BASE = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
+// self-hosted by bundle-engine.mjs into public/pyodide/ — same-origin so the
+// service worker can always serve it offline (cross-origin CDN was unreliable)
+const PYODIDE_BASE = "/pyodide/";
 
 type StartMsg = { kind: "start"; files: File[]; rules: Rule[]; limits: Limits };
 type GenerateMsg = { kind: "generate"; entries: Entry[]; selection: string[]; target: string };
