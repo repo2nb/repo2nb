@@ -41,13 +41,14 @@ export default function PrivacyPage() {
               generate and download the notebook. Zero network required.
             </p>
             <p className="mt-2 text-sm leading-relaxed text-muted">
-              Click <span className="font-mono text-fg">enable offline mode</span> in the top
-              bar once to install the engine (~6 MB, one time). After that, airplane mode is
-              fair game.
+              The top bar shows it happening: <span className="font-mono text-fg">caching…</span> while the
+              engine downloads itself in the background (~6 MB, one time; skipped on metered
+              connections), then <span className="font-mono text-ok">offline ready</span>. After that,
+              airplane mode is fair game.
             </p>
             <div className="card mt-4 rounded-lg p-5 font-mono text-[13px] leading-relaxed">
               <p className="text-faint"># verify it yourself</p>
-              <p>1. Load this site, click <span className="text-fg">enable offline mode</span></p>
+              <p>1. Load this site and wait for <span className="text-ok">offline ready</span> in the top bar</p>
               <p>2. DevTools (F12) → Network tab → check <span className="text-fg">Offline</span></p>
               <p>3. Convert a folder, download the notebook</p>
               <p>4. Everything works. No requests leave your machine.</p>
