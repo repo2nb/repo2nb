@@ -1,7 +1,7 @@
 // Offline-first cache: after the first visit, the app shell (all routes), the
 // Pyodide runtime (CDN) and the engine bundle are served from the cache, so the
 // tool works with the network off. API calls are never cached.
-const CACHE = "repo2nb-v3";
+const CACHE = "repo2nb-v4";
 
 // every route + favicon: precached at install so offline navigation works
 // even for pages the user never opened while online
@@ -67,6 +67,9 @@ self.addEventListener("fetch", (e) => {
   e.respondWith(
     (async () => {
       const cache = await caches.open(CACHE);
+      const key = keyFor(url, req.headers.get("rsc") === "1");
+      // engine bundle: network-first so new deploys replace stale cached copies
+      const networkFirst = url.pathname === "/engine.json";
       const cached = await cache.match(key);
       const network = fetch(req)
         .then((res) => {
@@ -75,12 +78,13 @@ self.addEventListener("fetch", (e) => {
         })
         .catch(() => null);
 
-      if (cached) {
+      if (cached && !networkFirst) {
         e.waitUntil(network);
         return cached;
       }
       const res = await network;
       if (res) return res;
+      if (cached) return cached; // offline fallback for network-first resources
       if (req.mode === "navigate") {
         const home = await cache.match("/");
         if (home) return home;

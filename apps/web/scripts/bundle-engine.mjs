@@ -14,18 +14,20 @@ const roots = [
 
 const files = {};
 for (const { dir, prefix } of roots) {
-  walk(dir, prefix);
+  walk(dir, prefix, dir);
 }
 
-function walk(dir, prefix) {
+// root stays fixed across recursion — computing relative() against the current
+// subdir would flatten nested packages (targets/x.py -> x.py) and clobber keys
+function walk(root, prefix, dir) {
   for (const name of readdirSync(dir)) {
     const full = join(dir, name);
     if (statSync(full).isDirectory()) {
-      if (name !== "__pycache__") walk(full, prefix);
+      if (name !== "__pycache__") walk(root, prefix, full);
       continue;
     }
     if (!name.endsWith(".py") && name !== "py.typed") continue;
-    const rel = `${prefix}/${relative(dir, full).split(sep).join("/")}`;
+    const rel = `${prefix}/${relative(root, full).split(sep).join("/")}`;
     files[rel] = readFileSync(full, "utf8");
   }
 }
