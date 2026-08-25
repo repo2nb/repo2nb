@@ -151,3 +151,4 @@ __pycache__/
 
 # vendored engine for Vercel python function (created by vercel-build.sh)
 apps/web/api/vendor/
+apps/web/public/engine.json

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
+import { OfflineBadge } from "./offline-badge";
 import { IconGithub, IconLinkedin, IconMoon, IconReddit, IconSun } from "./icons";
 
 export function Logo() {
@@ -26,8 +27,10 @@ export function Nav() {
           <Link href="/#tool" className="hover:text-fg">Home</Link>
           <Link href="/#how" className="hover:text-fg">How it works</Link>
           <Link href="/filters" className="hover:text-fg">Filters</Link>
+          <Link href="/privacy" className="hover:text-fg">Privacy</Link>
         </div>
         <div className="ml-auto flex items-center gap-1">
+          <OfflineBadge />
           <a
             href="https://github.com/repo2nb/repo2nb"
             target="_blank"
@@ -97,7 +100,8 @@ export function Faq() {
 
 export function Footer() {
   const socials = [
-    { href: "https://github.com/repo2nb/repo2nb", label: "GitHub", icon: <IconGithub /> },
+    // personal profiles: these are the author's accounts, not the project's
+    { href: "https://github.com/David-Magdy", label: "GitHub", icon: <IconGithub /> },
     { href: "https://www.linkedin.com/in/david-magdy-nagib", label: "LinkedIn", icon: <IconLinkedin /> },
     { href: "https://www.reddit.com/user/PolarIceBear_/", label: "Reddit", icon: <IconReddit /> },
   ];
@@ -108,6 +112,18 @@ export function Footer() {
           <Logo />
           <p className="mt-3 text-xs leading-relaxed text-muted max-w-xs">
             Upload any repository to Kaggle and Colab to utilize the power of their GPU resources.
+          </p>
+          <p className="mt-2 text-xs leading-relaxed text-muted max-w-xs">
+            Prefer the terminal? The{" "}
+            <a
+              href="https://github.com/repo2nb/repo2nb-cli"
+              target="_blank"
+              rel="noreferrer"
+              className="text-accent hover:underline"
+            >
+              repo2nb CLI
+            </a>{" "}
+            came first and does more than this site, which covers basic conversion.
           </p>
           <div className="mt-4">
             <p className="font-mono text-[11px] uppercase tracking-wide text-faint mb-1">
@@ -140,11 +156,7 @@ export function Footer() {
           <ul className="space-y-2 text-muted">
             <li className="font-mono text-[11px] uppercase tracking-wide text-faint">Resources</li>
             <li><Link href="/#faq" className="hover:text-fg">FAQ</Link></li>
-            <li>
-              <a href="https://github.com/David-Magdy" target="_blank" rel="noreferrer" className="hover:text-fg">
-                David Magdy (author)
-              </a>
-            </li>
+            <li><Link href="/privacy" className="hover:text-fg">Privacy</Link></li>
           </ul>
         </div>
       </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { Inter, JetBrains_Mono, Jost } from "next/font/google";
 import { Providers } from "@/components/providers";
+import { SWRegister } from "@/components/sw-register";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Providers>{children}</Providers>
         <Analytics />
+        <SWRegister />
       </body>
     </html>
   );

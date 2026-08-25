@@ -1,15 +1,12 @@
+import snapshot from "./default-rules.json";
 import type { Limits, Rule, Target } from "./types";
 
-let cachedRules: { rules: Rule[]; limits: Limits } | null = null;
-
+/** Rules/limits come from the committed snapshot of the Python core (sync-guarded by
+ * a core test), so nothing in the UI depends on a network call before conversion. */
 export async function getRules(): Promise<{ rules: Rule[]; limits: Limits }> {
-  if (!cachedRules) {
-    const res = await fetch("/api/rules");
-    if (!res.ok) throw new Error("couldn't load filter rules");
-    cachedRules = await res.json();
-  }
-  return cachedRules!;
+  return snapshot;
 }
+
 export class ApiError extends Error {
   status: number;
   constructor(status: number, message: string) {

@@ -1,8 +1,25 @@
-import pathspec  # noqa: F401
+import json
+import pathlib
 
 from repo2nb_core import deps, generator, scanner
+from repo2nb_core.defaults import DEFAULT_RULES, LARGE_FILE_BYTES, MAX_FILES, MAX_TOTAL_BYTES
 from repo2nb_core.notebook import VERSION
 from repo2nb_core.scanner import _spec, decide
+
+
+def test_web_rules_json_matches_core():
+    """The web /filters page renders from a committed JSON snapshot; this test keeps it
+    in sync with the single source of truth in defaults.py."""
+    snapshot = pathlib.Path(__file__).parents[2] / "apps" / "web" / "lib" / "default-rules.json"
+    if not snapshot.exists():  # core tests must pass when run outside the monorepo too
+        return
+    data = json.loads(snapshot.read_text())
+    assert data["rules"] == DEFAULT_RULES
+    assert data["limits"] == {
+        "max_total_bytes": MAX_TOTAL_BYTES,
+        "max_files": MAX_FILES,
+        "large_file_bytes": LARGE_FILE_BYTES,
+    }
 
 
 def _sources(cells):
@@ -153,3 +170,23 @@ def test_writefile_metadata_hash():
     wf = next(c for c in _cells(nb) if "".join(c["source"]).startswith("%%writefile"))
     assert wf["metadata"]["repo2nb"]["path"] == "src/train.py"
     assert wf["metadata"]["repo2nb"]["hash"].startswith("sha256:")
+
+
+def test_webapi_bridge():
+    import base64
+
+    from repo2nb_core import webapi
+
+    scan = json.loads(webapi.scan_payload(json.dumps({
+        "files": [{"path": "a.py", "size": 3}, {"path": "data/x.csv", "size": 5}],
+    })))
+    assert scan["files"][0]["included"] is True
+    assert scan["files"][1]["included"] is False
+
+    out = json.loads(webapi.generate_payload(json.dumps({
+        "files": {"src/train.py": base64.b64encode(b"print(1)\n").decode()},
+        "selection": ["src/train.py"],
+        "target": "kaggle",
+    })))
+    src = "\n".join("".join(c["source"]) for c in out["notebook"]["cells"])
+    assert "%%writefile /kaggle/working/src/train.py" in src

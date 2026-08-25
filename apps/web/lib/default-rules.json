@@ -1,0 +1,101 @@
+{
+  "rules": [
+    {
+      "pattern": "*.csv",
+      "reason": "dataset file"
+    },
+    {
+      "pattern": "node_modules/",
+      "reason": "dependency folder"
+    },
+    {
+      "pattern": ".venv/",
+      "reason": "virtualenv folder"
+    },
+    {
+      "pattern": "venv/",
+      "reason": "virtualenv folder"
+    },
+    {
+      "pattern": "site-packages/",
+      "reason": "dependency folder"
+    },
+    {
+      "pattern": "vendor/",
+      "reason": "dependency folder"
+    },
+    {
+      "pattern": "*.egg-info/",
+      "reason": "package build metadata"
+    },
+    {
+      "pattern": "__pycache__/",
+      "reason": "cache"
+    },
+    {
+      "pattern": ".pytest_cache/",
+      "reason": "cache"
+    },
+    {
+      "pattern": ".mypy_cache/",
+      "reason": "cache"
+    },
+    {
+      "pattern": ".ruff_cache/",
+      "reason": "cache"
+    },
+    {
+      "pattern": ".hypothesis/",
+      "reason": "cache"
+    },
+    {
+      "pattern": ".parcel-cache/",
+      "reason": "cache"
+    },
+    {
+      "pattern": ".next/",
+      "reason": "build output"
+    },
+    {
+      "pattern": "dist/",
+      "reason": "build output"
+    },
+    {
+      "pattern": "build/",
+      "reason": "build output"
+    },
+    {
+      "pattern": ".turbo/",
+      "reason": "build output"
+    },
+    {
+      "pattern": "checkpoints/",
+      "reason": "model checkpoint directory"
+    },
+    {
+      "pattern": ".git/",
+      "reason": "version control internals"
+    },
+    {
+      "pattern": ".github/",
+      "reason": "CI config: not needed at runtime"
+    },
+    {
+      "pattern": ".vscode/",
+      "reason": "editor config"
+    },
+    {
+      "pattern": ".idea/",
+      "reason": "editor config"
+    },
+    {
+      "pattern": ".env*",
+      "reason": "environment / secrets"
+    }
+  ],
+  "limits": {
+    "max_total_bytes": 4194304,
+    "max_files": 1500,
+    "large_file_bytes": 153600
+  }
+}

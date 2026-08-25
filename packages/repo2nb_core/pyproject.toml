@@ -17,6 +17,7 @@ packages = ["repo2nb_core"]
 
 [tool.ruff]
 line-length = 100
+exclude = ["_vendor"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { track } from "@vercel/analytics";
 import { Faq, Footer, Nav } from "@/components/chrome";
 import { Card, ResultScreen, TreeScreen } from "@/components/screens";
-import { ApiError, generate, getRules } from "@/lib/api";
+import { ApiError, getRules } from "@/lib/api";
+import { generateWithFallback } from "@/lib/offline";
 import { resetSession, session } from "@/lib/session";
 
 export default function ConvertPage() {
@@ -66,7 +67,7 @@ export default function ConvertPage() {
     setBusy(true);
     setError(null);
     try {
-      const blob = await generate(entries, [...checked], target);
+      const blob = await generateWithFallback(entries, [...checked], target);
       track("notebook_generated");
       setResultUrl((prev) => {
         if (prev) URL.revokeObjectURL(prev);

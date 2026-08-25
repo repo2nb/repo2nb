@@ -6,6 +6,16 @@ Pick a project folder in the browser, review the filtered file tree (with live s
 budgeting), and download a ready-to-run `.ipynb`. Nothing leaves your browser until you
 choose a folder, and files are processed in memory for a single request — never stored.
 
+## Privacy: it works offline
+
+The whole conversion engine runs in your browser via WebAssembly (Pyodide), and a
+service worker caches the app after your first visit. Load the site once, go offline,
+and convert with airplane mode on: scan, filtering, and notebook generation all happen
+locally. If the offline engine is unavailable (old browser), it falls back to the
+server API, where files are processed in memory for one request and never stored.
+No third-party network requests are made at any point; analytics is cookieless and
+carries only anonymous counters.
+
 ## Screenshots
 
 **Landing: the tool is the hero**
