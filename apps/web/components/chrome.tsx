@@ -24,10 +24,10 @@ export function Nav() {
       <nav className="mx-auto flex max-w-5xl items-center gap-6 px-5 py-3.5">
         <Logo />
         <div className="hidden sm:flex items-center gap-5 text-sm text-muted ml-4">
-          <Link href="/#tool" className="hover:text-fg">Home</Link>
-          <Link href="/#how" className="hover:text-fg">How it works</Link>
-          <Link href="/filters" className="hover:text-fg">Filters</Link>
-          <Link href="/privacy" className="hover:text-fg">Privacy</Link>
+          <Link href="/#tool" className="navlink hover:text-fg">Home</Link>
+          <Link href="/#how" className="navlink hover:text-fg">How it works</Link>
+          <Link href="/filters" className="navlink hover:text-fg">Filters</Link>
+          <Link href="/privacy" className="navlink hover:text-fg">Privacy</Link>
         </div>
         <div className="ml-auto flex items-center gap-1">
           <OfflineBadge />
@@ -78,19 +78,29 @@ export function Faq() {
     ],
   ];
   return (
-    <section id="faq" className="mx-auto max-w-3xl px-5 py-20">
+    <section id="faq" className="mx-auto max-w-3xl px-5 py-24 scroll-mt-20">
       <h2 className="font-display text-3xl tracking-tight mb-8">Questions</h2>
       <div className="divide-y divide-line border-y border-line">
         {qa.map(([q, a], i) => (
           <div key={i}>
             <button
               onClick={() => setOpen(open === i ? null : i)}
-              className="flex w-full items-center justify-between py-4 text-left text-sm font-medium hover:text-accent"
+              aria-expanded={open === i}
+              className="flex w-full items-center justify-between gap-4 py-4 text-left text-sm font-medium transition-colors hover:text-accent"
             >
               {q}
-              <span className={`text-faint transition-transform ${open === i ? "rotate-45" : ""}`}>+</span>
+              <span
+                aria-hidden
+                className={`shrink-0 text-faint transition-transform duration-300 ${open === i ? "rotate-45" : ""}`}
+              >
+                +
+              </span>
             </button>
-            {open === i && <p className="pb-4 text-sm leading-relaxed text-muted">{a}</p>}
+            <div className={`acc ${open === i ? "open" : ""}`}>
+              <div>
+                <p className="pb-4 pr-8 text-sm leading-relaxed text-muted">{a}</p>
+              </div>
+            </div>
           </div>
         ))}
       </div>
@@ -161,7 +171,7 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-line py-4 text-center text-xs text-faint font-mono">
-        files are processed in memory and discarded after one request
+        no accounts, no storage... install the engine once and convert without a network
       </div>
     </footer>
   );

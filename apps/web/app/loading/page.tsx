@@ -103,7 +103,7 @@ export default function LoadingPage() {
       <Logo />
       {error ? (
         <>
-          <p role="alert" className="mt-8 max-w-md rounded-md border border-warn/40 bg-warn/10 px-4 py-3 text-center text-sm text-warn font-mono">
+          <p role="alert" className="card mt-8 max-w-md rounded-xl px-4 py-3 text-center text-sm text-warn font-mono">
             {error}
           </p>
           <button onClick={() => router.push("/")} className="mt-6 text-sm text-muted underline-offset-2 hover:text-fg hover:underline">
@@ -111,21 +111,24 @@ export default function LoadingPage() {
           </button>
         </>
       ) : (
-        <>
-          <p className="mt-10 font-display text-2xl tracking-tight h-8" aria-live="polite">
+        <div className="card mt-10 w-full max-w-md rounded-2xl p-8">
+          <p className="font-display text-2xl tracking-tight h-8 text-center" aria-live="polite">
             <span key={verb} className="inline-block animate-[fadein_0.4s_ease]">
               {VERBS[verb]}
               <span className="animate-pulse">…</span>
             </span>
           </p>
-          <p className="mt-2 font-mono text-xs text-faint">{pct}%</p>
-          <div className="mt-4 h-1.5 rounded-full bg-hover overflow-hidden w-full max-w-md">
-            <div className="accent-bg h-full rounded-full transition-[width] duration-200" style={{ width: `${pct}%` }} />
+          <p className="mt-2 font-mono text-xs text-faint text-center">{pct}%</p>
+          <div className="mt-5 h-1.5 rounded-full bg-hover overflow-hidden">
+            <div
+              className="accent-bg h-full rounded-full transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              style={{ width: `${pct}%` }}
+            />
           </div>
-          <p className="mt-8 text-xs text-faint">
+          <p className="mt-6 border-t border-line pt-4 text-center text-xs text-faint font-mono">
             large folders take a moment; processing happens in the background
           </p>
-        </>
+        </div>
       )}
     </main>
   );

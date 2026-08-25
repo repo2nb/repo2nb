@@ -1,6 +1,7 @@
 "use client";
 
 import { Faq, Footer, Nav } from "@/components/chrome";
+import { Reveal } from "@/components/reveal";
 import snapshot from "@/lib/default-rules.json";
 import type { Rule } from "@/lib/types";
 
@@ -21,39 +22,45 @@ export default function FiltersPage() {
     <>
       <Nav />
       <main className="mx-auto max-w-3xl px-5 py-16">
-        <h1 className="font-display text-3xl tracking-tight">Default filters</h1>
-        <p className="mt-3 text-sm leading-relaxed text-muted">
-          These rules run before anything else, on every conversion. Your project&apos;s{" "}
-          <code className="font-mono text-fg bg-hover px-1 rounded">.gitignore</code> is applied next, and a{" "}
-          <code className="font-mono text-fg bg-hover px-1 rounded">.repo2nbignore</code> can override any of it —
-          use <code className="font-mono text-fg bg-hover px-1 rounded">!pattern</code> to force-include something
-          listed here. Every rule below comes from the same source of truth the tool itself uses.
-        </p>
+        <Reveal>
+          <h1 className="font-display text-3xl sm:text-4xl tracking-tight text-balance">Default filters</h1>
+          <p className="mt-3 text-sm leading-relaxed text-muted">
+            These rules run before anything else, on every conversion. Your project&apos;s{" "}
+            <code className="font-mono text-fg bg-hover px-1 rounded">.gitignore</code> is applied next, and a{" "}
+            <code className="font-mono text-fg bg-hover px-1 rounded">.repo2nbignore</code> can override any of it —
+            use <code className="font-mono text-fg bg-hover px-1 rounded">!pattern</code> to force-include something
+            listed here. Every rule below comes from the same source of truth the tool itself uses.
+          </p>
+        </Reveal>
 
         {[...groups.entries()].map(([group, rs]) => (
-          <section key={group} className="mt-10">
-            <h2 className="font-display text-xl tracking-tight">{group}</h2>
-            <ul className="mt-3 grid sm:grid-cols-2 gap-x-8">
-              {rs.map((r) => (
-                <li key={r.pattern} className="flex justify-between gap-4 border-b border-line py-2 font-mono text-[13px]">
-                  <span>{r.pattern}</span>
-                  <span className="text-faint">{r.reason.split(":").pop()?.trim()}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
+          <Reveal key={group}>
+            <section className="mt-10">
+              <h2 className="font-display text-xl tracking-tight">{group}</h2>
+              <ul className="card mt-3 grid gap-x-8 rounded-xl p-4 sm:grid-cols-2">
+                {rs.map((r) => (
+                  <li key={r.pattern} className="flex justify-between gap-4 border-b border-line py-2 font-mono text-[13px] last:border-b-0">
+                    <span>{r.pattern}</span>
+                    <span className="text-faint">{r.reason.split(":").pop()?.trim()}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </Reveal>
         ))}
 
-        <section className="mt-12 rounded-lg border border-line bg-panel p-5">
-          <h2 className="font-display text-lg tracking-tight">Precedence</h2>
-          <ol className="mt-3 space-y-1.5 text-sm text-muted list-decimal list-inside font-mono">
-            <li>repo2nb defaults (this page)</li>
-            <li>your project&apos;s .gitignore</li>
-            <li>your project&apos;s .repo2nbignore</li>
-            <li>checkbox toggles in the tree preview</li>
-          </ol>
-          <p className="mt-3 text-xs text-faint">each layer overrides the one above it</p>
-        </section>
+        <Reveal>
+          <section className="card mt-12 rounded-xl p-5">
+            <h2 className="font-display text-lg tracking-tight">Precedence</h2>
+            <ol className="mt-3 space-y-1.5 text-sm text-muted list-decimal list-inside font-mono">
+              <li>repo2nb defaults (this page)</li>
+              <li>your project&apos;s .gitignore</li>
+              <li>your project&apos;s .repo2nbignore</li>
+              <li>checkbox toggles in the tree preview</li>
+            </ol>
+            <p className="mt-3 text-xs text-faint">each layer overrides the one above it</p>
+          </section>
+        </Reveal>
       </main>
       <Faq />
       <Footer />
