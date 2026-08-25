@@ -13,6 +13,21 @@ export function registerServiceWorker() {
 
 const ENGINE_FLAG = "repo2nb-engine-installed";
 
+// keep in sync with CACHE in public/sw.js
+export const SW_CACHE = "repo2nb-v6";
+const PYODIDE_WASM = "https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.asm.wasm";
+
+/** True when the current SW cache really holds the offline engine. The
+ * localStorage flag alone can go stale across cache-version bumps. */
+export async function cacheReady(): Promise<boolean> {
+  try {
+    const c = await caches.open(SW_CACHE);
+    return !!(await c.match(PYODIDE_WASM)) && !!(await c.match("/engine.json"));
+  } catch {
+    return false;
+  }
+}
+
 export function engineInstalled(): boolean {
   return typeof localStorage !== "undefined" && localStorage.getItem(ENGINE_FLAG) === "1";
 }

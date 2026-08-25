@@ -1,6 +1,7 @@
 // Offline-first cache: after the first visit, the app shell (all routes), the
 // Pyodide runtime (CDN) and the engine bundle are served from the cache, so the
 // tool works with the network off. API calls are never cached.
+// keep in sync with SW_CACHE in apps/web/lib/offline.ts
 const CACHE = "repo2nb-v6";
 
 // every route + icon: precached at install so offline navigation works
@@ -65,7 +66,16 @@ self.addEventListener("install", (e) => {
     })(),
   );
 });
-self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
+self.addEventListener("activate", (e) =>
+  e.waitUntil(
+    (async () => {
+      // purge caches from previous versions so nothing stale can be served
+      const names = await caches.keys();
+      await Promise.all(names.filter((n) => n !== CACHE).map((n) => caches.delete(n)));
+      await self.clients.claim();
+    })(),
+  ),
+);
 
 self.addEventListener("fetch", (e) => {
   const req = e.request;

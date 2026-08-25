@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { engineInstalled, installEngine } from "@/lib/offline";
+import { cacheReady, engineInstalled, installEngine } from "@/lib/offline";
 
 type State = "hidden" | "caching" | "ready" | "offline";
 
@@ -10,9 +10,9 @@ type State = "hidden" | "caching" | "ready" | "offline";
 const ENGINE_EVENT = "repo2nb-engine-installed";
 let installing: Promise<void> | null = null;
 
-function ensureInstalled(): Promise<void> {
+function ensureInstalled(force = false): Promise<void> {
   const conn = navigator as Navigator & { connection?: { saveData?: boolean } };
-  if (!installing && !engineInstalled() && !conn.connection?.saveData) {
+  if (!installing && (force || !engineInstalled()) && !conn.connection?.saveData) {
     installing = installEngine()
       .then(() => {
         window.dispatchEvent(new Event(ENGINE_EVENT));
@@ -40,20 +40,28 @@ export function OfflineBadge() {
       if (!navigator.onLine) return setState("offline");
       setState(engineInstalled() ? "ready" : "caching");
     };
+    // verify the flag against the live cache: a stale flag (e.g. from a
+    // previous cache version) must not show green for a broken offline setup
+    const verify = async () => {
+      if (!alive || !navigator.onLine || !engineInstalled()) return sync();
+      if (await cacheReady()) return sync();
+      setState("caching");
+      ensureInstalled(true).finally(() => alive && sync());
+    };
     navigator.serviceWorker.ready.then(() => {
       if (!alive) return;
-      sync();
+      verify();
       ensureInstalled().finally(() => {
-        if (alive) sync();
+        if (alive) verify();
         else window.dispatchEvent(new Event(ENGINE_EVENT)); // someone else's mount will sync
       });
     });
-    window.addEventListener(ENGINE_EVENT, sync);
+    window.addEventListener(ENGINE_EVENT, verify);
     window.addEventListener("online", sync);
     window.addEventListener("offline", sync);
     return () => {
       alive = false;
-      window.removeEventListener(ENGINE_EVENT, sync);
+      window.removeEventListener(ENGINE_EVENT, verify);
       window.removeEventListener("online", sync);
       window.removeEventListener("offline", sync);
     };
